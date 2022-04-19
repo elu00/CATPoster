@@ -1,0 +1,304 @@
+% !TeX program = lualatex
+% https://github.com/anishathalye/gemini
+
+\documentclass[final,noamsthm]{beamer}
+
+% ====================
+% Packages
+% ====================
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[size=custom,width=120,height=72,scale=1]{beamerposter}
+\usetheme{gemini}
+\usecolortheme{gemini}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{multicol}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\setbeamertemplate{theorems}[numbered] % to number
+\usepackage{version}
+
+\newtheorem{thm}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\newcommand{\todo}{\\{\Huge{TODO}}\\}
+\newcommand{\from}{\colon}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\K}{\mathbb{K}}
+\renewcommand{\L}{\mathbb{L}}
+\newcommand{\cA}{{\mathcal A}}
+\newcommand{\cI}{{\mathcal I}}
+\newcommand{\cK}{{\mathcal K}}
+\newcommand{\cL}{{\mathscr L}}
+\newcommand{\cN}{{\mathcal N}}
+\newcommand{\cU}{{\mathcal U}}
+\newcommand{\bone}{\mathbbm{1}}
+\newcommand{\suchthat}{:}
+\renewcommand{\phi}{\varphi}
+\newcommand{\actson}{\mathrel{\curvearrowright}}
+\newcommand{\normalsg}{\mathrel{\unlhd}}
+\newcommand{\symdiff}{\mathrel{\triangle}}
+\newcommand{\algcl}[1]{\overline{#1}}
+\renewcommand{\th}[1]{{#1}^{\mathrm{th}}}
+\newcommand{\opp}[1]{{#1}^{\mathrm{opp}}}
+\newcommand{\red}[1]{{\color{red}{#1}}}
+
+\DeclareMathOperator{\powerset}{{\mathcal{P}}}
+\DeclareMathOperator{\im}{im}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\End}{End}
+\DeclareMathOperator{\LT}{LT}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\PAut}{PAut}
+\DeclareMathOperator{\ch}{char}
+\DeclareMathOperator{\curl}{curl}
+\renewcommand{\div}{\mathbf{div}}
+\newcommand{\Diff}{\text{Diff}}
+\newcommand{\FDiff}{\text{FDiff}}
+\renewcommand{\bar}{\overline}
+\def\p{\partial}
+\def\ep{\varepsilon}
+\def\st{\;\vert\;}
+\newcommand{\abs}[1]{\left\vert #1\right\vert}
+\newcommand{\norm}[1]{\left\Vert #1\right\Vert}
+
+\newcommand{\colsection}[1]{
+    \begin{beamercolorbox}[colsep*=0ex,dp=2ex,center]{block title}
+        \vskip0pt
+        \usebeamerfont{block section} #1
+        \vskip-1.25ex
+        \begin{beamercolorbox}[colsep=0.05ex]{block separator}\end{beamercolorbox}
+    \end{beamercolorbox}
+    {\parskip0pt\par}
+    \vskip0pt
+}
+%\newenvironment{bblock}[1]{\comment}{\endcomment}
+\excludeversion{bblock}
+
+% ====================
+% Lengths
+% ====================
+
+% If you have N columns, choose \sepwidth and \colwidth such that
+% (N+1)*\sepwidth + N*\colwidth = \paperwidth
+\newlength{\sepwidth}
+\newlength{\colwidth}
+\setlength{\sepwidth}{0.020\paperwidth}
+\setlength{\colwidth}{0.225\paperwidth}
+
+\newcommand{\separatorcolumn}{\begin{column}{\sepwidth}\end{column}}
+
+% ====================
+% Title
+% ====================
+\title{Circular Arc Triangulations}
+\author{Ethan Lu}
+\institute{Department of Mathematical Sciences, Carnegie Mellon, Pittsburgh}
+
+% ====================
+% Footer (optional)
+% ====================
+
+\footercontent{
+CMU Poster Competition }
+% (can be left out to remove footer)
+
+% ====================
+% Logo (optional)
+% ====================
+
+% use this to include logos on the left and/or right side of the header:
+\logoright{\includegraphics[height=7cm]{cmu.png}}
+% ====================
+% Body
+% ====================
+
+\begin{document}
+
+\begin{frame}[t]
+    \begin{columns}[t]
+        \separatorcolumn
+
+        \begin{column}{\colwidth}
+            \colsection{Motivation and Setup}
+            \begin{alertblock}{Background/Abstract}
+                This project explores how triangulations with circular edges can be a valuable primitive for a variety of geometric algorithms.  An extremely common way to discretize smooth surfaces is using Euclidean triangles, with straight edges---however, such triangles do a poor job of capturing some important features of smooth surfaces, such as its curvature (which becomes highly singular), and angle-preserving or \emph{conformal} maps (which cannot preserve angles in the discrete setting).  On the other hand, surface approximations using higher-order patches (NURBS, etc.) become difficult to control, and to reason about.  Circular arc triangulations (CATs) provide a middle ground, where only a few additional degrees of freedom give a significant geometric improvement.  We describe a variety of ways of parameterizing CATs, including a novel parameterization by a triangle in a constant-curvature geometry, plus a M\"{o}bius transformation of the plane---different parameterizations in turn allow us to formulate efficient algorithms and optimization problems in various settings.  In particular, we show how to approximate a curved surface by a CAT mesh with curvature only along edges (rather than at vertices); using a connection to \emph{circle patterns} we describe a discrete version of Riemann mapping where angles are directly preserved; and, X.
+            \end{alertblock}
+
+            \begin{block}{Setup and Notation}
+                \begin{center}
+                    \includegraphics[width = 0.8\textwidth] {flowmap.pdf}\\
+                \end{center}
+                Throughout, our domain of interest will be a fixed open and connected subset of $\R^n$, which will serve as an initial reference frame for our fluid.
+                Denoting this set by $\Omega$, we then set $\Sigma := \partial \Omega$ to be it's boundary and $\nu:\Sigma\to\R^n$ to be the associated outward pointing unit normal.
+
+                Given any such domain, we can then define the function spaces $\Diff_0(\Omega),\FDiff(\Omega) \subseteq L^2(\Omega;\R^n)$, which are set to be
+                \begin{align*}
+                    \Diff_0(\Omega) & =\{\eta: \Omega \to \Omega\st  \eta \in \FDiff(\Omega)\}                                   \\
+                    \FDiff(\Omega)  & =\{\eta :\Omega \to \R^n\st\eta \text{ a volume/orientation preserving diffeomorphism}\} .
+                \end{align*}
+            \end{block}
+
+
+
+
+
+        \end{column}
+        \separatorcolumn
+        \begin{column}{\colwidth}
+            \colsection{Technical Tools}
+            \begin{block}{Existence of a Perturbation}
+                With these preliminaries established, we'll now move onto various technical results, which will facilitate the calculations and constructions used to derive our final PDEs.
+                To begin, consider the space $X$ of all flows associated to $\Omega$ over the time interval $[0,1]$; that is,
+                \[
+                    X:=\{\eta\in C^1([0,1];\FDiff(\Omega))\st \eta(0)=\eta_0,\eta(1)=\eta_1\}
+                \]
+                where $\eta_0, \eta_1$ are some fixed initial and terminal states of the fluid.
+                Given any $\eta \in X$, we can then view this function as a path between $\eta_0$ and $\eta_1$ along the manifold $\FDiff$, with $\eta(t)$ encoding ``where the fluid is at time $t$.''
+                Since we're then interested in characterizing \emph{shortest} paths along $\FDiff$, a natural question to then ask would be what local changes can be made to such a path $\eta$. \\
+                Fixing any such one-parameter family of flows $\zeta(s):(-\ep,\ep)\to X$ with $\zeta(0) = \eta$, an obvious necessary condition is that $\partial_s \zeta(0)(t)$ is in the tangent space of $\FDiff$ at $\eta(t)$.
+                Using techniques from the theory of ODE,  we can show that this is also a sufficient condition; that is, given an arbitrary velocity field $v_0$, we can find $\zeta$ parametrizing perturbations of $\eta$ such that the derivative of $\zeta$ at $\eta$ is equal to the desired velocity field.
+
+                Formally, the statement is as follows.
+                \begin{lemma}
+                    Let $v_0:[0,1]\to \{v\in L^2(\Omega; \R^n) \st \div\;(v\circ\eta^{-1})=0\}$, $\eta_0,\eta_1\in \FDiff(\Omega)$ be fixed.\\
+                    Then there exists a perturbation $ \zeta: (-\ep, \ep) \to X$ such that:
+                    \[
+                        \zeta(0)=\eta ,\zeta(s)\in C^\infty, \text{ and }
+                        \p_s \zeta(x,0,t):=v(\eta(x,t),0,t)=v_0(\eta(x,t),t)
+                    \]
+                \end{lemma}
+                Using this lemma, since we now know that $\frac{d\zeta}{ds}$ can be specified arbitrarily, we obtain useful characterizations of local minima of the energies that we can use in conjunction with the following results.
+                %This will allow us to see that if a function integrated against arbitrary $\frac{d\zeta}{ds}$ is zero, then the function must be 0.
+            \end{block}
+
+
+
+            \begin{block}{Reynolds Transport Theorem on Hypersurfaces}
+                The final result we will need is the Reynolds Transport Theorem, which is a result that allows us to obtain explicit formulae for the derivatives of boundary terms in our energies, which we will need for those energies involving surfactants.
+                \begin{thm}
+                    Let $\Sigma$ be a hypersurface and $\beta\in C^1(\Sigma\times [0,1]; \R^n)$. Set $\Sigma(t)=\beta(\Sigma,t)$. If $f\in C^1(\R^n\times [0,1];\R^n)$, then
+                    \begin{equation}
+                        \dfrac{d}{dt}\int_{\Sigma(t)}f=\int_{\Sigma(t)}\p_t f+\nabla f\cdot u+f\div_{\Sigma(t)}u
+                    \end{equation}
+                    where $u(\beta(x,t),t)=\p_t\beta(x,t)$ and the surface divergence is
+                    $
+                    \div_{\Sigma(t)}u=\text{tr}((I-\nu\otimes\nu)Du).
+                    $
+                \end{thm}
+            \end{block}
+
+
+        \end{column}
+
+
+
+        \separatorcolumn
+
+        \begin{column}{\colwidth}
+            \colsection{Main Results}
+            \begin{block}{Previous results: Arnold's setup }
+                We start with Arnold's original derivation of the Euler equations, noting in particular the relative simplicity of the associated energy.
+                \begin{thm}[Arnold]
+                \end{thm}
+                \begin{proof}[Proof Sketch]
+                \end{proof}
+
+            \end{block}
+            \begin{block}{Result \texttt{\#}1: Surface tension and potential}
+                We now consider a significant complication of the Arnold functional, where we introduce a globally defined potential term $\varphi$ (which can represent forces such as gravity or electromagnetism), allow the Eulerian and densities $\rho$ of the fluid to vary over space, add a term $\sigma$ to compensate for surface tension, and allow the fluid to move freely through space.
+                \begin{thm}
+                    Given a constant $\sigma\in \R^+$, $\bar\rho:\Omega\to \R^+$ and $\varphi\in C^1(\R^n)$, minimizers (if they exist) of the energy $E:X\to \R$ defined via
+                    \begin{equation}
+                        E(\eta)=\int_0^1\left(\int_{\Omega}\dfrac{\bar \rho }{2}|\p_t\eta|^2-\varphi(\eta)\;dx-\int_{\p\Omega(t)}\sigma dS\right)dt
+                    \end{equation}
+                    must satisfy the incompressible Euler equations with surface tension; that is,
+                    \begin{equation}
+                        \begin{cases}
+                            \rho (\p_t u+u\cdot\nabla u)+\nabla p=-\nabla \varphi & \text{ on }\Omega(t)   \\
+                            \div\; u= 0                                           & \text{ on }\Omega(t)   \\
+                            p=-\sigma H                                           & \text{ on }\p\Omega(t)
+                        \end{cases}
+                    \end{equation}
+                    where $\Omega(t) := \eta (\Omega, t)$, $u$ is the Eulerian velocity defined via $u(\eta(x,t),t)=\p_t\eta(x,t)$, $\bar \rho,\rho$ are Lagrangian and Eulerian  densities, and $H=-\div\;\nu$ is the mean curvature of $\p\Omega(t)$.
+                \end{thm}
+                \begin{proof}[Proof Sketch]
+                    We proceed as in the previous result.
+                    By first only considering compactly supported velocity fields, we can isolate the contribution of the terms defined on $\Omega$ to deduce the first equation.
+                    Considering general velocity fields, combining the Reynolds transport equation and the surface divergence theorem, and doing further computations then yields the other equations.
+                \end{proof}
+
+            \end{block}
+
+            %\colsection{Results (contd)}
+
+
+
+
+
+
+
+
+        \end{column}
+
+        \separatorcolumn
+
+        \begin{column}{\colwidth}
+            \vspace{-1.5cm}
+
+            \begin{block} {Result \texttt{\#}3: Surfactants freely moving along boundary}
+                Finally, we introduce another degree of freedom by allowing the surfactants to move along the boundary independently of the mass in the interior, as parameterized by a function $\beta$.
+                \begin{thm}
+                    Let $X$ be as above and
+                    \begin{equation*}
+                        Y=\{\beta\in C^1([0,1];\Diff_0(\p\Omega))\st \beta(0,x)=x\}
+                    \end{equation*}
+                    Given $\bar \rho:\Omega\to \R^+,\ \xi:\R\to \R^+, \ \bar\gamma_0:\p\Omega\to \R^+,\ \varphi\in C^1(\R^n)$, consider $E:X\times Y\to \R$ via
+                    \begin{equation}
+                        E(\eta,\beta)=\int_0^1\left(\int_{\Omega}\dfrac{\bar \rho}{2}|\p_t\eta|^2-\varphi(\eta)\;dx+\int_{\p\Omega}\dfrac{\bar\gamma_0}{2}|\p_t(\eta\circ\beta)|^2\;dS-\int_{\p\Omega(t)}\xi(\gamma)\;dS\right)dt
+                    \end{equation}
+                    with all relevant terms as defined above.
+
+                    Then minimizers (if they exist) of the energy functional $E$ must satisfy
+                    \begin{equation}
+                        \label{final_system}
+                        \begin{cases}
+                            \rho(\p_t u+u\cdot \nabla u) +\nabla p=-\nabla \varphi                         & \text{on }\Omega(t)   \\
+                            \div\;u=0                                                                      & \text{on }\Omega(t)   \\
+                            \gamma(\p_t u_s+u_s\cdot \nabla u_s)-p\nu=\nabla_{\Sigma(t)}\sigma+H\nu \sigma & \text{on }\p\Omega(t) \\
+                            \p_t\gamma+\nabla\gamma\cdot u+\gamma\div_{\Sigma(t)}u=0                       & \text{on }\p\Omega(t)
+                        \end{cases}
+                    \end{equation}
+                    where $u_s$ is the Eulerian velocity of the surfactants (defined via $u_s(\eta(\beta(x,t),t),t)=\p_t (\eta(\beta(x,t),t))$), $\sigma=\xi(\gamma)-\xi'(\gamma)\gamma$ is the surface tension, and $u,\bar \rho,\rho,$ and $p$ are as before.
+                \end{thm}
+
+
+                Note that while this result and the previous result appear to be very similar, the surfactant velocity $u_s$ is now generated not only by the motion of $\eta$ but also by the motion of the surfactants $\beta$, which complicates the corresponding terms. %while $u$ depends solely upon $\eta$.
+            \end{block}
+
+            \begin{block}{Acknowledgements}
+                This project was joint work with Jonathan Jenkins and Desmond Reed.
+                We would also like to thank advisor Ian Tice for his guidance and mentorship throughout this project. This project was supported by funding from the NSF CAREER grant (\texttt{\#}1653161).
+            \end{block}
+            \begin{block}{References}
+                \vspace{-0.3em}
+                {\tiny
+                    \nocite{*}
+                    \begin{multicols}{2}
+                        \bibliographystyle{abbrv}
+                        \bibliography{refs}
+                \end{multicols}}
+            \end{block}
+        \end{column}
+        \separatorcolumn
+    \end{columns}
+\end{frame}
+
+\end{document}
