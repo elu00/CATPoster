@@ -13,7 +13,7 @@
 \usecolortheme{mit}
 \usepackage{graphicx}
 \usepackage{booktabs}
-\usepackage{tikz}
+\usepackage{tikz,tikz-cd}
 \usepackage{pgfplots}
 \usepackage{multicol}
 \usepackage{amsmath}
@@ -22,12 +22,14 @@
 \usepackage{version}
 
 \newtheorem{thm}{Theorem}
-\newtheorem{defn}{Definition}
-\newtheorem{lemma}{Lemma}
+\newtheorem{ex}{Example}
+\newtheorem{defn}[ex]{Definition}
+\newtheorem{lemma}[ex]{Lemma}
 
 \newcommand{\todo}{\\{\Huge{TODO}}\\}
 \newcommand{\from}{\colon}
 \newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\F}{\mathbb{F}}
@@ -51,6 +53,8 @@
 \newcommand{\red}[1]{{\color{red}{#1}}}
 
 \DeclareMathOperator{\powerset}{{\mathcal{P}}}
+\DeclareMathOperator{\diam}{{diam}}
+\DeclareMathOperator{\Unif}{{Unif}}
 \DeclareMathOperator{\im}{im}
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\End}{End}
@@ -153,9 +157,9 @@ Towards doing so, the primary relation we will be interested in studying is that
             \end{alertblock}
 
             \begin{block}{Setup and Notation}
-                Throughout, our domain of interest will be a fixed smooth Riemannian manifold $M$, which we'll typically assume to just be given by the $n$ dimensional torus, $\mathbb T^n := (\R/\Z)^n$.
+                Throughout, our domain of interest will be a fixed smooth Riemannian manifold $M$, which we'll typically assume to just be given by the $n$ dimensional torus, $\mathbb T^n := (\R/\Z)^n$. We'll then equip this space with it's natural measure $\pi$, normalized so that $M$ has total mass $1$.
 
-                Given any such domain, we can then define the function spaces $\Diff_0(\Omega),\FDiff(\Omega) \subseteq L^2(\Omega;\R^n)$, which are set to be
+                Given any such domain, we can then define the function spaces $L^2(M),L^2_0(M), H^s(M), \dot H^\alpha(M)$, which are the spaces of square integrable functions, square integrable functions with mean 0, the usual Sobolev space of order $s$, and the homogenous Sobolev space of order $\alpha$.
             \end{block}
 
 
@@ -191,34 +195,104 @@ Heuristically, the answer is no: in addition to intuitive arguments suggesting a
 			\tau_d := \inf \{t-s \st \norm{\mathcal{S}{s,t}(\theta_s)} \le \dfrac{\norm {\theta_s}}{e} \quad \forall \theta_s \in L^2_0, t \in \R\}.
 		\]
 	\end{defn}
+	\begin{lemma}[Energy Equality]
+		For any $s \le t$, we have that
+		\[
+			\norm{\theta(t)}^2
+			=\norm{\theta(s)}^2 \exp \left(-2 \kappa \int_s^t\dfrac{\norm{\theta(r)}^2_{\dot H^1}}{\norm{\theta(r)}^2} dr\right).
+		\]
+	\end{lemma}
+	\begin{lemma}
+		Let $\phi$ be the solution to the system above with $\kappa = 0$.
+		Then
+		\begin{align*}
+			\norm{\theta(t)-\phi(t)}^{2} \leqslant 2 \sqrt{2 \kappa(t-s)}\norm{\theta_{s}}\left(2\|\nabla u\|_{L^{\infty}} \int_{s}^{t}\norm{\theta}_{H^{1}}^{2} +\left\|\theta_{s}\right\|_{H^{1}}^{2}\right)^{1 / 2} .
+		\end{align*}
+	\end{lemma}
+	\begin{lemma}
+		Let $H(\kappa) \in \R$ satisfy
+		\[
+			\sqrt{H(\kappa)} (\ln c_1 + \ln(H(\kappa)) + \ln 2) = \dfrac{c_2}{64 \sqrt{\kappa\norm{\nabla u}_{L^\infty}}}
+		\]
+		and suppose that $\lambda_N$ is the largest eigenvalue of $\Delta$ in $[0,H(\kappa)]$.
+		Then if
+		\(
+		\norm{\theta_{s}}_{\dot H^1}^{2}<\lambda_{N}\norm{\theta_{s}}^{2}
+		\)
+		we have the estimate
+		\[
+			\norm{\theta\left(s+ t_0\right)}^{2} \le\exp \left(-\frac{\kappa H(\kappa) t_0}{8}\right)\norm{\theta_{s}}^{2}
+		\]
+		where
+		\[
+			t_0 := 2\left(\ln c_1+\ln\left({2\lambda_N}\right)\right)/{c_2}.
+		\]
+	\end{lemma}
+
+
+
             \end{block}
 
 
-            \begin{block}{Sketch of Theorem \#1}
-                We now provide a brief sketch of the proof of 
-            \end{block}
-
-
+            
         \end{column}
 
 
 
         \separatorcolumn
-
         \begin{column}{\colwidth}
             \colsection{Discrete Time}
             \begin{block}{Motivation and Examples}
-                We start with Arnold's original derivation of the Euler equations, noting in particular the relative simplicity of the associated energy.
+                In continuous time, we considered a model of our underlying system as a smooth density continuously affected by bulk movement (advection) and small scale scattering (diffusion).
+            In discrete time, we'll be considering a slightly different model of the underlying dynamics, splitting the advection and diffusion terms into two operators represented by interleaving a dynamical system and Markov Kernel.
+                %Motivation: Fundamental solution of the heat equation, convergence of random walks with drift.
+\begin{ex}[Doubling Map]
+    Let $\mathbb{T} := \R / \Z$, and $T: \mathbb T \to \mathbb T$ be given by $x \mapsto 2x$.
+    For $\kappa > 0$, let $K_\kappa$ be the transition kernel corresponding to the operator $e^{ \kappa \Delta}$, and consider the Markov transition kernel given by $TK_\kappa$.
+    Then the Lebesgue measure is the unique invariant measure of this system with $\tau_{mix} \le C \abs{\ln \kappa}$.
+\end{ex}
+\begin{ex}[Doubling Map with Uniform Noise]
+   Let $\mathbb{T}, T$ be as in the previous theorem, and for $n \in \N$, let $K_n$ be the transition kernel given by 
+   \[
+        K_n(x, A) \sim \pi(A \cap [x-2^{-N},x +2^{-N}])
+   \]
+   where again $\pi$ denotes the Lebesgue measure.
+   Then the Markov transition kernel given by $TK_\kappa$ has the Lebesgue measure as its the nique invariant measure with $\tau_{mix} \le 2n$.
+\end{ex}
+\begin{ex}[Baker's Map]
+Let $M := \mathbb{T}^2$ and $T:\mathbb{T}^2 \to \mathbb{T}^2$ be the dynamical system given by
+\[
+    (0.x_1x_2\cdots, 0.y_1y_2\cdots) \mapsto (0.x_2\cdots, 0.x_1y_1y_2\cdots),
+\] 
+where $0.x_1x_2\cdots$ denotes the binary expansion of $x\in [0,1)$. \\
+For $N \in \N$, let $K_N$ be the transition kernel associated to the process 
+\[
+    X_{i+1} = X_i + 2^{-N}\Unif[-1,1]
+\]
+Then the Lebesgue measure is the unique invariant measure of the kernel $T P_N$ with associated mixing time $\tau_{mix} \le C N$.
+\end{ex}
+
+
 
             \end{block}
             \begin{block}{Markov Processes and Dynamical Systems}
-
-                \begin{proof}[Proof Sketch]
-                    We proceed as in the previous result.
-                    By first only considering compactly supported velocity fields, we can isolate the contribution of the terms defined on $\Omega$ to deduce the first equation.
-                    Considering general velocity fields, combining the Reynolds transport equation and the surface divergence theorem, and doing further computations then yields the other equations.
-                \end{proof}
-
+                Recall that a \textbf{Markov transition kernel} $K$ on $M$ is a function $K:M \times \mathcal{B}(M) \to [0,1]$ such that
+        %\item For any fixed $A \in \b(M)$, $K(\cdot, A)$ is measurable, 
+        $K(x,\cdot)$ is a probability measure on $M$ for every $x \in M$, with a natural extension to a linear map between signed measures via the action
+    \[
+        K\star \mu(A) := \int_{M}K(x,A) \mu(dx).
+    \]
+    \begin{defn}
+        A series of $M$-valued random variables $\{X_i\}_{i \in \N}$ is a \textbf{Markov process with kernel} $K$ if $X_{i+1}$ is independent of $X_j$ for all $j < i$ conditioned on $X_i$, and $\mu_{X_{i+1}} = K \mu_{X_i}$ for all $i \in \N$.
+    \end{defn}
+    \begin{defn}
+    Given a Markov kernel $K$ with unique stationary measure $\pi$, we define the \textbf{mixing time} $\tau_{mix}$ of $K$ to be
+    \[
+        \tau_{mix} :=\sup_{\mu }\inf_{n \in \N} \norm{K^n \mu - \pi}_{TV} \le 1/e.
+    \]
+    where the supremum is taken over all probability measures $\mu$.
+ 
+    \end{defn}
             \end{block}
 
         \end{column}
@@ -228,20 +302,60 @@ Heuristically, the answer is no: in addition to intuitive arguments suggesting a
         \begin{column}{\colwidth}
             \vspace{-1.5cm}
 
-            \begin{block} {Proof Sketch}
-                Finally, we introduce another degree of freedom by allowing the surfactants to move along the boundary independently of the mass in the interior, as parameterized by a function $\beta$.
+            \begin{block}{Main Result}
+                We can now state our main result.
+                Recall that we say $\varphi$ is \emph{Bernoulli} if there exists a Bernoulli shift $(\Omega, \mathcal B, \mu)$ and a bijective, measure preserving $\pi \colon M \to \Omega$ such that
+  \begin{equation*}
+    \pi \circ \varphi = S \circ \pi\,,
+  \end{equation*}
+  where $S$ is the shift operator on~$\Omega$.
+  In other words, we have that the following diagram commutes:
+%  \tikzset{commutative diagrams/.cd,
+%smoffset/.style={start anchor=center,end anchor=center,draw=none,yshift=-5pt,xshift=-8pt}
+%}
+
+%\newcommand\commsmile[2][\smiley]{\arrow[smoffset]{#2}{#1}}
+    \[
+        \begin{tikzcd}[row sep=large,column sep=huge,ampersand replacement=\&]
+        M  \ar[d, "\pi"] \ar[r, "\varphi"]\& M \ar[d, "\pi"]\\
+        \Omega \ar[r, "S"] \& \Omega
+        \end{tikzcd}
+    \]
+\begin{defn}
+  Given a manifold $M$ and a map $\pi: M \to \Omega$ as above, we say that the Bernoulli map $\varphi$ is exponentially mixing
+    \[
+        \sup_{x \in M} \diam(A_{-N,N,x}) \le c_1 e^{-c_2 N}
+    \forall N \in \N.
+    \]
+\end{defn}
+
+
                 \begin{thm}
-Let $M$ be a Riemannian manifold and $T: M \to M$ be a smooth exponentially mixing dynamical system (in the sense of Bernoulli systems).
-			Suppose further that $K_\kappa$ is a homogenous Markov transition kernel on $M$.
-			Then the mixing time of the Markov process associated to $T \star K_\kappa$ satisfies the estimate
+Let $M$ be a Riemannian manifold and $\varphi: M \to M$ be a smooth exponentially mixing dynamical system (in the sense above).
+			Suppose further that $K_\kappa$ is a Markov transition kernel on $M$ such that
+            \begin{enumerate}
+        \item on $M$, $K$ satisfies
+      \begin{equation*}
+        K(x, \cdot) \geq \alpha \frac{1}{\mu{B(x, \kappa)}} \chi_{B(x, \kappa)} d \mu
+      \end{equation*}
+      for some $\alpha > 0$.%,  $N$ with $h(N) \le \kappa/2$
+        \item \textbf{[Homogeneity]} For all $-N \le m \le N$, there exists a bijective $M_{m,\omega, \eta}: \Omega \to \Omega$ such that if $\omega_i = \eta_i$ for all $i \ge m$,
+            \[
+                M_{m,\omega, \eta} \star K(\omega,\cdot) = K(\eta, \cdot)
+            \]
+            and $M(\gamma)_i = \gamma_i$ for all $i \ge m, \gamma \in \Omega$.
+       \end{enumerate}
+			Then the mixing time of the Markov process associated to $\varphi \star K_\kappa$ satisfies the estimate
 			\[
 				\tau_{mix} \le C\abs{\ln \kappa}.
 			\]
+            \begin{proof}[Proof Sketch]
+                By standard results from probability, it suffices to construct a coupling of any two initial distributions that couples in expected $\mathcal{O}(N)$ time.
+                To do so, we begin by using the first assumption to put any two initial distributions in the same ``relative position'' from the perspective of the Bernoulli system.
+                After this, using homogeneity, we can force any two points to be within distance $\kappa$ of each other in order $N$ steps, after which we can make them couple exactly in order 1 time.
+            \end{proof}
 
                 \end{thm}
-
-
-                Note that while this result and the previous result appear to be very similar, the surfactant velocity $u_s$ is now generated not only by the motion of $\eta$ but also by the motion of the surfactants $\beta$, which complicates the corresponding terms. %while $u$ depends solely upon $\eta$.
             \end{block}
 
             %\begin{block}{Acknowledgements}
@@ -252,8 +366,7 @@ Let $M$ be a Riemannian manifold and $T: M \to M$ be a smooth exponentially mixi
             \begin{block}{References}
                 \vspace{-0.3em}
                 {
-                    \small
-                    %\tiny
+                    \tiny
                     \nocite{*}
                     \begin{multicols}{2}
                         \bibliographystyle{abbrv}
