@@ -98,7 +98,7 @@
 % ====================
 % Title
 % ====================
-\title{Circular Arc Triangulations}
+\title{A Probabilistic Analysis of Enhanced Dissipation}
 \author{Ethan Lu}
 \institute{Department of Mathematical Sciences, Carnegie Mellon, Pittsburgh}
 
@@ -134,7 +134,7 @@ CMU Poster Competition }
 
             \begin{block}{Setup and Notation}
                 \begin{center}
-                    \includegraphics[width = 0.8\textwidth] {flowmap.pdf}\\
+                    %\includegraphics[width = 0.8\textwidth] {flowmap.pdf}\\
                 \end{center}
                 Throughout, our domain of interest will be a fixed open and connected subset of $\R^n$, which will serve as an initial reference frame for our fluid.
                 Denoting this set by $\Omega$, we then set $\Sigma := \partial \Omega$ to be it's boundary and $\nu:\Sigma\to\R^n$ to be the associated outward pointing unit normal.
@@ -215,19 +215,13 @@ CMU Poster Competition }
             \begin{block}{Result \texttt{\#}1: Surface tension and potential}
                 We now consider a significant complication of the Arnold functional, where we introduce a globally defined potential term $\varphi$ (which can represent forces such as gravity or electromagnetism), allow the Eulerian and densities $\rho$ of the fluid to vary over space, add a term $\sigma$ to compensate for surface tension, and allow the fluid to move freely through space.
                 \begin{thm}
-                    Given a constant $\sigma\in \R^+$, $\bar\rho:\Omega\to \R^+$ and $\varphi\in C^1(\R^n)$, minimizers (if they exist) of the energy $E:X\to \R$ defined via
-                    \begin{equation}
-                        E(\eta)=\int_0^1\left(\int_{\Omega}\dfrac{\bar \rho }{2}|\p_t\eta|^2-\varphi(\eta)\;dx-\int_{\p\Omega(t)}\sigma dS\right)dt
-                    \end{equation}
-                    must satisfy the incompressible Euler equations with surface tension; that is,
-                    \begin{equation}
-                        \begin{cases}
-                            \rho (\p_t u+u\cdot\nabla u)+\nabla p=-\nabla \varphi & \text{ on }\Omega(t)   \\
-                            \div\; u= 0                                           & \text{ on }\Omega(t)   \\
-                            p=-\sigma H                                           & \text{ on }\p\Omega(t)
-                        \end{cases}
-                    \end{equation}
-                    where $\Omega(t) := \eta (\Omega, t)$, $u$ is the Eulerian velocity defined via $u(\eta(x,t),t)=\p_t\eta(x,t)$, $\bar \rho,\rho$ are Lagrangian and Eulerian  densities, and $H=-\div\;\nu$ is the mean curvature of $\p\Omega(t)$.
+Suppose that $u$ is a smooth, divergence free, and exponentially mixing velocity field.
+			Then for $\kappa \ll 1$, the dissipation time of the associated advection-diffusion equations is bounded by
+			\[
+				\tau_d \le  C\abs{\ln{\kappa}}^2
+			\]
+			for some $C > 0$.
+
                 \end{thm}
                 \begin{proof}[Proof Sketch]
                     We proceed as in the previous result.
@@ -237,15 +231,6 @@ CMU Poster Competition }
 
             \end{block}
 
-            %\colsection{Results (contd)}
-
-
-
-
-
-
-
-
         \end{column}
 
         \separatorcolumn
@@ -253,43 +238,32 @@ CMU Poster Competition }
         \begin{column}{\colwidth}
             \vspace{-1.5cm}
 
-            \begin{block} {Result \texttt{\#}3: Surfactants freely moving along boundary}
+            \begin{block} {Result \texttt{\#}2: Surfactants freely moving along boundary}
                 Finally, we introduce another degree of freedom by allowing the surfactants to move along the boundary independently of the mass in the interior, as parameterized by a function $\beta$.
                 \begin{thm}
-                    Let $X$ be as above and
-                    \begin{equation*}
-                        Y=\{\beta\in C^1([0,1];\Diff_0(\p\Omega))\st \beta(0,x)=x\}
-                    \end{equation*}
-                    Given $\bar \rho:\Omega\to \R^+,\ \xi:\R\to \R^+, \ \bar\gamma_0:\p\Omega\to \R^+,\ \varphi\in C^1(\R^n)$, consider $E:X\times Y\to \R$ via
-                    \begin{equation}
-                        E(\eta,\beta)=\int_0^1\left(\int_{\Omega}\dfrac{\bar \rho}{2}|\p_t\eta|^2-\varphi(\eta)\;dx+\int_{\p\Omega}\dfrac{\bar\gamma_0}{2}|\p_t(\eta\circ\beta)|^2\;dS-\int_{\p\Omega(t)}\xi(\gamma)\;dS\right)dt
-                    \end{equation}
-                    with all relevant terms as defined above.
+Let $M$ be a Riemannian manifold and $T: M \to M$ be a smooth exponentially mixing dynamical system (in the sense of Bernoulli systems).
+			Suppose further that $K_\kappa$ is a homogenous Markov transition kernel on $M$.
+			Then the mixing time of the Markov process associated to $T \star K_\kappa$ satisfies the estimate
+			\[
+				\tau_{mix} \le C\abs{\ln \kappa}.
+			\]
 
-                    Then minimizers (if they exist) of the energy functional $E$ must satisfy
-                    \begin{equation}
-                        \label{final_system}
-                        \begin{cases}
-                            \rho(\p_t u+u\cdot \nabla u) +\nabla p=-\nabla \varphi                         & \text{on }\Omega(t)   \\
-                            \div\;u=0                                                                      & \text{on }\Omega(t)   \\
-                            \gamma(\p_t u_s+u_s\cdot \nabla u_s)-p\nu=\nabla_{\Sigma(t)}\sigma+H\nu \sigma & \text{on }\p\Omega(t) \\
-                            \p_t\gamma+\nabla\gamma\cdot u+\gamma\div_{\Sigma(t)}u=0                       & \text{on }\p\Omega(t)
-                        \end{cases}
-                    \end{equation}
-                    where $u_s$ is the Eulerian velocity of the surfactants (defined via $u_s(\eta(\beta(x,t),t),t)=\p_t (\eta(\beta(x,t),t))$), $\sigma=\xi(\gamma)-\xi'(\gamma)\gamma$ is the surface tension, and $u,\bar \rho,\rho,$ and $p$ are as before.
                 \end{thm}
 
 
                 Note that while this result and the previous result appear to be very similar, the surfactant velocity $u_s$ is now generated not only by the motion of $\eta$ but also by the motion of the surfactants $\beta$, which complicates the corresponding terms. %while $u$ depends solely upon $\eta$.
             \end{block}
 
-            \begin{block}{Acknowledgements}
-                This project was joint work with Jonathan Jenkins and Desmond Reed.
-                We would also like to thank advisor Ian Tice for his guidance and mentorship throughout this project. This project was supported by funding from the NSF CAREER grant (\texttt{\#}1653161).
-            \end{block}
+            %\begin{block}{Acknowledgements}
+            %    Thanks 
+                %This project was joint work with Jonathan Jenkins and Desmond Reed.
+                %We would also like to thank advisor Ian Tice for his guidance and mentorship throughout this project. This project was supported by funding from the NSF CAREER grant (\texttt{\#}1653161).
+            %\end{block}
             \begin{block}{References}
                 \vspace{-0.3em}
-                {\tiny
+                {
+                    \small
+                    %\tiny
                     \nocite{*}
                     \begin{multicols}{2}
                         \bibliographystyle{abbrv}
